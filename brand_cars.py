@@ -4,6 +4,15 @@ import pandas as pd
 
 def main(search_terms, countries_filt, start_date, end_date, conn_string):
 
+
+    """
+    INPUT: ALL VARIABLES THAT WE WANT TO SEARCH AND FILTER
+    
+    OUTPUT: LOADING "FINAL_DATAFRAME" TO DATABASE
+                      WITH THE BELOW COLUMNS "COUNTRY, BRAND, #NUMBER (NUMBER SEARCH)
+    """
+
+
     df_list = []
     for search_term in search_terms:
         
@@ -18,9 +27,20 @@ def main(search_terms, countries_filt, start_date, end_date, conn_string):
             print(search_term)
             print(country)
             print(interest_over_time_df)
+
+            #Concat all dataframes of df_list
             df_list.append(interest_over_time_df)
             
             print(f'Dataframe for {search_term} and {country} added')
+            print('Next Search')
+
+            """
+            time.sleep(n) is used to introduce a delay or pause 
+            in the execution of a program for a specified number of seconds. 
+            In this case, This helps us pause for 3 seconds to avoid 
+            overwhelming the Google Trends API.
+            """
+
             time.sleep(3)
 
     final_df = pd.concat(df_list, axis=0)
@@ -31,7 +51,10 @@ def main(search_terms, countries_filt, start_date, end_date, conn_string):
 
     
 
-    #Transform Phase
+    """
+    Featuring engineering
+
+    """
 
     #Drop
     final_df.drop(columns=['date', 'isPartial'], index= 0 ,inplace = True)
@@ -62,12 +85,30 @@ def main(search_terms, countries_filt, start_date, end_date, conn_string):
     # Create a table in the database using the dataframe
     report.to_sql(name = "2021_2022_vehicles", con = conn_string, if_exists="replace")
 
-    print('ya esta')
+    print('Finished')
 
 
 if __name__ == '__main__':
 
-    conn_string = "postgresql://postgres:snow@localhost:5432/astara_demo"
+    """
+    conn_string is used to establish a connection to PostgreSQL database.
+    Remember to edit by our username and database_name
+    
+    """
+
+    username = "snow"
+    database_name = "car_project"
+    conn_string = f"postgresql://postgres:{username}@localhost:5432/{database_name}"
+
+    """
+    requests_arg:
+    It sets up a custom User-Agent header for making HTTP requests using 
+    the requests library in Python.
+
+    The User-Agent header is part of the HTTP protocol and is used to 
+    identify the client making the request. It typically includes 
+    information about the client's operating system, browser, and version.
+    """
 
     requests_args = {
     'headers': {
